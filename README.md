@@ -1,7 +1,7 @@
 ## Ising model monte carlo
 
-Was reading the statistical physics coursebook on a boring Easter at home and this exercise caught my eye.
+`./run.sh` the simulation, then `analyze.m` the `results` in matlab.
 
-Managed to get some kind of a phase transition and called it a day...
+You'll probably need to be on (a debian-based?) linux.
 
 ![heat.png](heat.png)
