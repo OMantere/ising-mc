@@ -10,13 +10,19 @@ using namespace std;
 
 
 int stabilizationDuration = 100000;
-int averagingDuration = 100;
-int M = 50;
-vector<double> E_t(M);
-vector<double> E2_t(M);
-vector<double> m_t(M);
-vector<double> C_t(M);
-vector<double> T_t(M);
+int averagingDuration = 10000;
+int datapoints = 100;
+int T_start = 30;
+int T_end = 150;
+double J = 1e-22;
+int SIZEX = 20;
+int SIZEY = 20;
+
+vector<double> E_t(datapoints);
+vector<double> E2_t(datapoints);
+vector<double> m_t(datapoints);
+vector<double> C_t(datapoints);
+vector<double> T_t(datapoints);
 
 void print() {
     cout << endl;
@@ -35,11 +41,9 @@ void print(T t, Args... args) {
 
 void iteration(int j) {
     ModelOptions options = ModelOptions();
-    options.J = 1e-22;
-    options.setGridSize(20, 20);
-    int T_start = 30;
-    int T_end = 100;
-    double deltaT = (T_end - T_start)/(double)M;
+    options.J = J;
+    options.setGridSize(SIZEX, SIZEY);
+    double deltaT = (T_end - T_start)/(double)datapoints;
     double temp = T_start + j*deltaT;
     options.setTemperature(temp);
     IsingModel model = IsingModel(options);
@@ -77,15 +81,17 @@ int main() {
     srand(time(0));
     vector<thread> threads;
 
-    for(int j = 0; j < M; j++)
+    for(int j = 0; j < datapoints; j++) {
         threads.push_back(thread(iteration, j));
+        print("Started thread", j);
+    }
 
-    for(int j = 0; j < M; j++)
+    for(int j = 0; j < datapoints; j++)
         threads[j].join();
 
     ofstream f;
     f.open("results");
-    for(int j = 0; j < M; j++)
+    for(int j = 0; j < datapoints; j++)
         f << E_t[j] << "\t" << m_t[j] << "\t" << C_t[j] << "\t" << T_t[j] << endl;
     f.close();
     return 0;
